@@ -131,11 +131,11 @@ This project uses election vote count data for statistical digit distribution an
 The data was analyzed to compare observed digit frequencies against expected theoretical probability distributions.
 
 ---
-
 # Author
 
 Cameron Batts
 
 GitHub: https://github.com/Cameron-Batts
 
-Portfolio: https://cameronbatts.github.io
+Portfolio: https://cameron-batts.github.io
+
