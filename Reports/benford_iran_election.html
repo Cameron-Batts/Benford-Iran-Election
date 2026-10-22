@@ -1,0 +1,60 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Benford First-Digit Analysis of Provincial Vote Totals | Cameron Batts</title><style>body{margin:0;background:#f7f8fa;color:#152540;font:16px/1.65 system-ui}main{max-width:950px;margin:auto;padding:32px 24px}h1{font:bold 2.4rem Georgia}h2{border-bottom:2px solid #e8c97a;margin-top:36px}pre{padding:18px;background:white;border-left:3px solid #c9a84c;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}details{margin:16px 0}summary{cursor:pointer}p{overflow-wrap:anywhere}a{color:#1a3560}img{max-width:100%;height:auto}</style><main><a href="https://cameron-batts.github.io/">← Portfolio</a><h1>Benford First-Digit Analysis of Provincial Vote Totals</h1><p><strong>Cameron Batts</strong></p><h2>Problem</h2><p>Compare the first digits of 30 reported provincial vote totals with an explicit Benford reference distribution.</p><h2>Approach</h2><p>Parse comma-separated vote totals as numeric, validate positive integer counts and compare all nine first-digit frequencies with log10(1+1/d). Retain the chi-square approximation and add a proposed fixed-null Monte Carlo calculation for small expected counts.</p><h2>Verified findings</h2><p>Independent Python calculation reproduced first-digit counts [5, 4, 5, 3, 2, 4, 3, 1, 3], Pearson χ²=7.5941 (8 degrees of freedom), and the approximate p-value 0.4741. Seven of nine expected digit counts are below five; the smallest is about 1.37.</p><h2>Limitations</h2><p>The asymptotic p-value needs caution because of small expected counts. Non-rejection does not prove conformity, and neither conformity nor deviation establishes election integrity. Population and turnout constrain provincial totals, and the appropriateness of the Benford reference model requires justification. The original repository did not document the upstream election-data source.</p><h2>Data</h2><p>Data/Election2009Iran.csv contains 30 provincial rows. Only Total votes is used for the reported test; candidate names and regional labels remain factual source data.</p><h2>Verification</h2><p>Counts and relevant numerical findings were checked independently in Python. R is unavailable here, so revised R code was reviewed but not parsed, executed or rendered. Historical images are retained separately from the revised workflow.</p><p><a href="https://github.com/Cameron-Batts/Benford-Iran-Election/blob/main/Notebooks/benford_iran_election.Rmd">View revised R Markdown source</a></p><details><summary>Revised R Markdown workflow (not executed here)</summary><pre>---
+title: &quot;Benford First-Digit Analysis of Provincial Vote Totals&quot;
+author: &quot;Cameron Batts&quot;
+output: html_document
+---
+
+## Problem
+Compare the first digits of 30 reported provincial vote totals with an explicit Benford reference distribution.
+
+## Approach
+Parse comma-separated vote totals as numeric, validate positive integer counts and compare all nine first-digit frequencies with log10(1+1/d). Retain the chi-square approximation and add a proposed fixed-null Monte Carlo calculation for small expected counts.
+
+## Verified findings
+Independent Python calculation reproduced first-digit counts [5, 4, 5, 3, 2, 4, 3, 1, 3], Pearson χ²=7.5941 (8 degrees of freedom), and the approximate p-value 0.4741. Seven of nine expected digit counts are below five; the smallest is about 1.37.
+
+## Limitations
+The asymptotic p-value needs caution because of small expected counts. Non-rejection does not prove conformity, and neither conformity nor deviation establishes election integrity. Population and turnout constrain provincial totals, and the appropriateness of the Benford reference model requires justification. The original repository did not document the upstream election-data source.
+
+## Data
+Data/Election2009Iran.csv contains 30 provincial rows. Only Total votes is used for the reported test; candidate names and regional labels remain factual source data.
+
+## Verification
+Counts and relevant numerical findings were checked independently in Python. R is unavailable here, so revised R code was reviewed but not parsed, executed or rendered. Historical images are retained separately from the revised workflow.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+project_root &lt;- if (dir.exists(&quot;Data&quot;)) &quot;.&quot; else &quot;..&quot;
+knitr::opts_knit$set(root.dir = normalizePath(project_root))
+```
+```{r data}
+votes &lt;- read.csv(&quot;Data/Election2009Iran.csv&quot;, check.names = FALSE)
+raw &lt;- votes[[&quot;Total votes&quot;]]
+totals &lt;- as.numeric(gsub(&quot;,&quot;, &quot;&quot;, as.character(raw), fixed = TRUE))
+stopifnot(length(totals) == 30, all(is.finite(totals)), all(totals &gt; 0),
+          all(totals == floor(totals)))
+first &lt;- as.integer(substr(format(totals, scientific = FALSE, trim = TRUE), 1, 1))
+counts &lt;- table(factor(first, levels = 1:9))
+expected_probability &lt;- log10(1 + 1/(1:9))
+comparison &lt;- data.frame(digit = 1:9, observed = as.integer(counts),
+                         expected = length(totals) * expected_probability)
+comparison
+```
+
+## Goodness-of-fit checks
+```{r tests}
+# Approximation is retained for comparison, with the expected-count warning visible.
+asymptotic &lt;- chisq.test(counts, p = expected_probability)
+asymptotic
+# Fixed-null multinomial simulation avoids relying on the chi-square asymptotic approximation.
+set.seed(42)
+chisq.test(counts, p = expected_probability, simulate.p.value = TRUE, B = 100000)
+barplot(rbind(comparison$observed / length(totals), expected_probability),
+        beside = TRUE, names.arg = 1:9, legend.text = c(&quot;Observed&quot;, &quot;Benford&quot;),
+        ylab = &quot;First-digit proportion&quot;)
+```
+The first-digit model is an assumed reference distribution. Provincial totals are constrained by population and turnout; agreement or disagreement is not a reliable standalone verdict about election integrity. The small sample also limits sensitivity. The simulated result above is a proposed R calculation and has not been executed in this update.
+
+## Method reference
+Deckert, Myagkov and Ordeshook (2011), *Benford&#x27;s Law and the Detection of Election Fraud*, Political Analysis, doi:10.1093/pan/mpr014. This research discusses limitations of Benford tests for elections.
+</pre></details><h2>Historical visualizations</h2><p>These images are retained from the original analysis. They do not represent execution of the revised workflow.</p><figure><img alt="Historical Distribution visualization" src="https://raw.githubusercontent.com/Cameron-Batts/Benford-Iran-Election/main/Images/Distribution.png"><figcaption>Distribution — historical output</figcaption></figure><h2>References</h2><ul><li><a href="https://doi.org/10.1093/pan/mpr014">Deckert, Myagkov and Ordeshook (2011), Benford’s Law and the Detection of Election Fraud</a></li></ul></main></html>
