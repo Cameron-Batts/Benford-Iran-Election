@@ -1,141 +1,37 @@
-# Benford’s Law Election Analysis
+# Benford First-Digit Analysis of Provincial Vote Totals
 
-![Benford Distribution Analysis](./Images/Distribution.png)
+**Author:** Cameron Batts
 
-## Project Overview
-This project applies Benford’s Law analysis to election vote totals in order to examine numerical digit distributions and evaluate whether the observed data aligns with expected probabilistic patterns.
+## Problem
+Compare the first digits of 30 reported provincial vote totals with an explicit Benford reference distribution.
 
-The analysis focuses on identifying deviations between observed leading-digit frequencies and theoretical Benford distributions using statistical visualization and comparative analysis techniques in R.
+## Approach
+Parse comma-separated vote totals as numeric, validate positive integer counts and compare all nine first-digit frequencies with log10(1+1/d). Retain the chi-square approximation and add a proposed fixed-null Monte Carlo calculation for small expected counts.
 
----
+## Verified findings
+Independent Python calculation reproduced first-digit counts [5, 4, 5, 3, 2, 4, 3, 1, 3], Pearson χ²=7.5941 (8 degrees of freedom), and the approximate p-value 0.4741. Seven of nine expected digit counts are below five; the smallest is about 1.37.
 
-# Project Objectives
-- Apply Benford’s Law to election data
-- Compare observed digit frequencies to expected Benford distributions
-- Evaluate deviations using graphical and statistical analysis
-- Explore potential irregularities in numerical reporting patterns
-- Visualize first-digit and second-order digit behavior
+## Limitations
+The asymptotic p-value needs caution because of small expected counts. Non-rejection does not prove conformity, and neither conformity nor deviation establishes election integrity. Population and turnout constrain provincial totals, and the appropriateness of the Benford reference model requires justification. The original repository did not document the upstream election-data source.
 
----
+## Data
+Data/Election2009Iran.csv contains 30 provincial rows. Only Total votes is used for the reported test; candidate names and regional labels remain factual source data.
 
-# Tools & Technologies
-- R
-- Benford.analysis
-- ggplot2
-- tidyverse
-- Statistical Analysis
-- Distribution Analysis
-- Data Visualization
+## Verification
+Counts and relevant numerical findings were checked independently in Python. R is unavailable here, so revised R code was reviewed but not parsed, executed or rendered. Historical images are retained separately from the revised workflow.
 
----
-
-# Repository Structure
-
-```text
-Benfords-Law-Election-Analysis/
-│
-├── Data/
-├── Images/
-│   └── Distribution.png
-│
-├── Notebooks/
-│   └── benford_iran_election.Rmd
-│
-├── Reports/
-│
-└── README.md
+## Run
+Install R and Pandoc (or use RStudio), then run from the repository root:
+```r
+source("install.R")
+rmarkdown::render("Notebooks/benford_iran_election.Rmd")
 ```
+Dependencies are unpinned. No API key is needed for the default workflow.
 
----
+## Files
+- [R Markdown analysis](Notebooks/benford_iran_election.Rmd)
+- [Readable analysis](Reports/benford_iran_election.html)
+- [Portfolio report](https://cameron-batts.github.io/benford_iran_election.html)
 
-# Analysis Overview
-
-The project evaluates:
-- first-digit frequency distributions
-- second-order digit tests
-- summation distributions
-- chi-squared differences
-- absolute summation differences
-
-Observed digit frequencies were compared against expected Benford probabilities to assess alignment and deviation patterns.
-
----
-
-# Visualization Components
-
-The dashboard includes:
-- digit frequency distribution
-- second-order Benford tests
-- summation distribution analysis
-- chi-squared difference plots
-- absolute excess summation analysis
-
-These visualizations help identify areas where observed values diverge from expected Benford behavior.
-
----
-
-# Benford Distribution Analysis
-
-The visualization below compares observed election digit frequencies against expected Benford distributions.
-
-![Benford Analysis](./Images/Distribution.png)
-
----
-
-# Key Findings
-- Lower digits appeared more frequently than higher digits, consistent with Benford expectations.
-- Several digits demonstrated deviations from expected theoretical frequencies.
-- Chi-squared and summation difference plots highlighted areas of statistical divergence.
-- Second-order tests provided additional insight into numerical distribution behavior.
-- Visual analysis demonstrated how Benford’s Law can be applied to real-world datasets for anomaly detection.
-
----
-
-# Statistical Concepts Applied
-- Benford’s Law
-- First-digit distribution analysis
-- Chi-squared analysis
-- Summation testing
-- Statistical anomaly detection
-- Distribution comparison
-- Exploratory statistical visualization
-
----
-
-# Supporting Files
-
-This repository includes:
-- R Markdown notebooks
-- Benford distribution visualizations
-- statistical outputs
-- exploratory analysis files
-
----
-
-# Skills Demonstrated
-- Statistical analysis
-- Distribution analysis
-- Benford’s Law application
-- Exploratory data analysis
-- R programming
-- Data visualization
-- Anomaly detection
-- Quantitative reasoning
-
----
-
-# Data
-
-This project uses election vote count data for statistical digit distribution analysis using Benford’s Law methodologies.
-
-The data was analyzed to compare observed digit frequencies against expected theoretical probability distributions.
-
----
-# Author
-
-Cameron Batts
-
-GitHub: https://github.com/Cameron-Batts
-
-Portfolio: https://cameron-batts.github.io
-
+## References
+- [Deckert, Myagkov and Ordeshook (2011), Benford’s Law and the Detection of Election Fraud](https://doi.org/10.1093/pan/mpr014)
