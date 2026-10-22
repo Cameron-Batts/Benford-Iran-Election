@@ -1,1 +1,1 @@
-install.packages(c("rmarkdown", "knitr"), repos = "https://cloud.r-project.org")
+install.packages(c("jsonlite", "rmarkdown", "knitr"), repos = "https://cloud.r-project.org")

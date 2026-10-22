@@ -20,7 +20,7 @@ The asymptotic p-value needs caution because of small expected counts. Non-rejec
 Data/Election2009Iran.csv contains 30 provincial rows. Only Total votes is used for the reported test; candidate names and regional labels remain factual source data.
 
 ## Verification
-Counts and relevant numerical findings were checked independently in Python. R is unavailable here, so revised R code was reviewed but not parsed, executed or rendered. Historical images are retained separately from the revised workflow.
+Counts and relevant numerical findings were checked independently in Python. The revised R workflow was executed and rendered during this pass. Historical images are retained separately from the revised workflow.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -48,7 +48,8 @@ asymptotic <- chisq.test(counts, p = expected_probability)
 asymptotic
 # Fixed-null multinomial simulation avoids relying on the chi-square asymptotic approximation.
 set.seed(42)
-chisq.test(counts, p = expected_probability, simulate.p.value = TRUE, B = 100000)
+simulated <- chisq.test(counts, p = expected_probability, simulate.p.value = TRUE, B = 100000)
+simulated
 barplot(rbind(comparison$observed / length(totals), expected_probability),
         beside = TRUE, names.arg = 1:9, legend.text = c("Observed", "Benford"),
         ylab = "First-digit proportion")
@@ -57,3 +58,9 @@ The first-digit model is an assumed reference distribution. Provincial totals ar
 
 ## Method reference
 Deckert, Myagkov and Ordeshook (2011), *Benford's Law and the Detection of Election Fraud*, Political Analysis, doi:10.1093/pan/mpr014. This research discusses limitations of Benford tests for elections.
+
+
+## Validation update - October 22, 2026
+The revised R Markdown executed and rendered on 30 provincial totals. Chi-square statistic=7.5941; asymptotic p=0.4741; fixed-null multinomial simulation p=0.4643 with 100,000 replicates and seed 42. Sparse expected counts limit the asymptotic test. This does not prove either fraud or absence of fraud.
+
+Fresh outputs are recorded in Reports/validation_results.json. Archived source results use different preprocessing where noted.
